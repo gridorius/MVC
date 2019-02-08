@@ -8,6 +8,7 @@ class Column{
   public $primary = false;
   public $unique = false;
   public $foreign = false;
+  private $value;
 
   public function __construct($name, $type){
     $this->name = $name;

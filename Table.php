@@ -11,7 +11,7 @@ class Table{
 
   public function addColumns(){
     foreach(func_get_args() as $column)
-      $this->columns[] = $column;
+      $this->columns[$column->name] = $column;
   }
 
   public function createQuery(){
