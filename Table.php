@@ -1,11 +1,12 @@
 <?php
 class Table{
   private $name;
-  private $connection;
+  private $database;
   private $columns = [];
 
-  public function __construct($name, $connection){
+  public function __construct($name, $database){
     $this->name = $name;
+    $this->database = $database;
   }
 
   public function addColumns(){
@@ -13,7 +14,7 @@ class Table{
       $this->columns[] = $column;
   }
 
-  public function create(){
+  public function createQuery(){
     $fields = [];
     $primary = [];
     $unique = [];
@@ -43,6 +44,10 @@ class Table{
     $create = "CREATE TABLE ".$this->name."($fields)";
 
     return $create;
+  }
+
+  public function create(){
+    $this->database->execute($this->createQuery());
   }
 }
 ?>

@@ -3,13 +3,16 @@ class Database{
   private $connection;
 
   public function __construct($dbname, $login, $password){
-    $connection = new PDO("mysql:dbname=$dbname;host=localhost;charset=utf8", $login, $password);
-    $this->connection = $connection;
+    $this->connection = new PDO("mysql:dbname=$dbname;host=localhost;charset=utf8", $login, $password);
   }
 
-  public function execute($query, $args){
-    $connection->prepare($query);
-    return $connection->execute($args);
+  public function table($name){
+    return new Table($name, $this);
+  }
+
+  public function execute($query, $args = []){
+    $prepare = $this->connection->prepare($query);
+    return $prepare->execute($args);
   }
 }
 ?>
