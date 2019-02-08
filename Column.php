@@ -1,12 +1,12 @@
 <?php
 class Column{
-  private $name;
-  private $type;
-  private $null = false;
-  private $default = false;
-  private $increment = false;
-  private $primary = false;
-  private $unique = false;
+  public $name;
+  public $type;
+  public $null = false;
+  public $default = false;
+  public $increment = false;
+  public $primary = false;
+  public $unique = false;
 
   public function __construct($name, $type){
     $this->name = $name;
@@ -15,22 +15,27 @@ class Column{
 
   public function primary(){
     $this->primary = true;
+    return $this;
   }
 
   public function unique(){
     $this->unique = true;
+    return $this;
   }
 
   public function increment(){
     $this->increment = true;
+    return $this;
   }
 
   public function setDefault($default){
     $this->default = $default;
+    return $this;
   }
 
   public function nullable(){
     $this->null = true;
+    return $this;
   }
 
   public function create(){
