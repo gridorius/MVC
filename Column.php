@@ -7,6 +7,7 @@ class Column{
   public $increment = false;
   public $primary = false;
   public $unique = false;
+  public $foreign = false;
 
   public function __construct($name, $type){
     $this->name = $name;
@@ -20,6 +21,12 @@ class Column{
 
   public function unique(){
     $this->unique = true;
+    return $this;
+  }
+
+  public function foreign($foreign){
+    $foreign->setForColumn($this->name);
+    $this->foreign = $foreign;
     return $this;
   }
 
