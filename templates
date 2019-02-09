@@ -2,25 +2,26 @@ class Users extends Table{
   public $user_id;
   public $login;
   public $password;
+  public $files;
 }
 
 class UsersTableInfo extends TableInfo{
-  public $user_id;
-  public $login;
-  public $password;
+  public static $user_id;
+  public static $login;
+  public static $password;
 
   public function __construct(){
-    $this->user_id = new Column('int(3)');
-    $this->login = new Column('varchar(100)');
-    $this->password = new Column('varchar(100)');
+    static::$user_id = new Column('int(3)');
+    static::$login = new Column('varchar(100)');
+    static::$password = new Column('varchar(100)');
   }
 }
 
 class UserForeigns extends Foreigns{
-  $files;
+  public static $files;
 
   public function __construct(){
-    $files = $this->files = new ViaForeign();
+    $files = static::$files = new ViaForeign();
     $file->setFrom('users', 'user_id');
     $file->setVia('user_files', 'user_id' ,'file_id');
     $file->setTo('files', 'file_id');
