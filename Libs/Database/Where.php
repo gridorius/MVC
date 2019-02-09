@@ -33,6 +33,10 @@ class Where{
       $this->where.= ' '.$args[0].' '.$args[1].' '.$args[2];
   }
 
+  public function __toString(){
+    return $this->get();
+  }
+
   public function get(){
     return $this->where;
   }
