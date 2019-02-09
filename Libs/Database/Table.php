@@ -19,12 +19,16 @@ class Table implements IteratorAggregate{
   public function createQuery(){
     $select = $this->select ? join(', ', $this->select) : '*';
     $table = $this->name;
-    $where = $this->where;
-    return "SELECT $select FROM $table WHERE $where";
+    $where = $this->wherr.'' ? 'WHERE '.$this->where : '';
+    return "SELECT $select FROM $table $where";
   }
 
   public function getIterator(){
-    Database::execute($query);
+    return new ArrayIterator($this->toList());
+  }
+
+  public function toList(){
+    return Database::execute($this->createQuery())->fetchAll(PDO::FETCH_OBJ);
   }
 
   public function where(){

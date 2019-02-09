@@ -14,7 +14,8 @@ class Database{
 
   public static function execute($query, $args = []){
     $prepare = static::$connection->prepare($query);
-    return $prepare->execute($args);
+    $prepare->execute($args);
+    return $prepare;
   }
 }
 ?>
