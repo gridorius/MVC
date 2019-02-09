@@ -1,17 +1,13 @@
 <?php
 class Column{
-  public $name;
   public $type;
   public $null = false;
   public $default = false;
   public $increment = false;
   public $primary = false;
   public $unique = false;
-  public $foreign = false;
-  private $value;
 
-  public function __construct($name, $type){
-    $this->name = $name;
+  public function __construct($type){
     $this->type = $type;
   }
 
@@ -25,14 +21,9 @@ class Column{
     return $this;
   }
 
-  public function foreign($foreign){
-    $foreign->setForColumn($this->name);
-    $this->foreign = $foreign;
-    return $this;
-  }
-
   public function increment(){
     $this->increment = true;
+    $this->primary();
     return $this;
   }
 
@@ -47,7 +38,7 @@ class Column{
   }
 
   public function create(){
-    $column = $this->name.' '.$this->type;
+    $column = $this->type;
     $column.= $this->null ? ' NULL' : ' NOT NULL';
     $column.= $this->default ? " DEFAULT ".$this->default : '';
     $column.= $this->increment ? ' AUTO_INCREMENT' : '';

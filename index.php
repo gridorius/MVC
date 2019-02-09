@@ -1,10 +1,10 @@
 <?php
 include_once 'Bootstrap.php';
-new Database('test', 'root', '');
+include_once 'Models/Users.php';
 
-$table = new Table('users');
+$config = json_decode(file_get_contents('configuration.json'));
+new Database($config->dbname, $config->login, $config->password);
 
-foreach($table->select('user_id', 'login') as $user)
-  echo $user->login;
-
+$users = Database::Users();
+echo var_dump($users->toList());
 ?>

@@ -8,6 +8,10 @@ class Database{
     static::$context = $this;
   }
 
+  public static function __callStatic($name, $args){
+    return static::table($name);
+  }
+
   public static function table($name){
     return new Table($name);
   }

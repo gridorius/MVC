@@ -1,32 +1,4 @@
-class Users extends Table{
-  public $user_id;
-  public $login;
-  public $password;
-  public $files;
-}
 
-class UsersTableInfo extends TableInfo{
-  public static $user_id;
-  public static $login;
-  public static $password;
-
-  public function __construct(){
-    static::$user_id = new Column('int(3)');
-    static::$login = new Column('varchar(100)');
-    static::$password = new Column('varchar(100)');
-  }
-}
-
-class UserForeigns extends Foreigns{
-  public static $files;
-
-  public function __construct(){
-    $files = static::$files = new ViaForeign();
-    $file->setFrom('users', 'user_id');
-    $file->setVia('user_files', 'user_id' ,'file_id');
-    $file->setTo('files', 'file_id');
-  }
-}
 
 SELECT
 table1.ref_name,
