@@ -1,0 +1,124 @@
+<?php
+include_once 'Bootstrap.php';
+
+$config = json_decode(file_get_contents('configuration.json'));
+$dbname = $config->dbname;
+Database::creteContext($dbname, 'root', '');
+
+$tables = [];
+$models = [];
+
+foreach(Database::execute('show tables')->fetchAll(PDO::FETCH_NUM) as $table)
+  $tables[] = $table[0];
+
+foreach($tables as $table){
+  $columns = Database::execute('show columns from '.$table)->fetchAll(PDO::FETCH_OBJ);
+
+  $class = "class ".preg_replace('/s$/', '', $table)."{}\n";
+
+  $infoTable = $class."\nclass {$table}InfoTable extends InfoTable{\n";
+
+  foreach($columns as $column)
+    $infoTable.= "\tpublic static $".$column->Field.";\n";
+
+  $infoTable.= "\n\tpublic function __construct(){\n";
+    foreach($columns as $column){
+      $infoTable.= "\t\t(new Column('".$column->Type."'))";
+      if($column->Null == 'YES')
+        $infoTable.= "->nullable()";
+      if($column->Key == 'PRI')
+        $infoTable.= "->primary()";
+      if($column->Key == 'UNI')
+        $infoTable.= "->unique()";
+      if($column->Default)
+        $infoTable.= "->setDefault('".$column->Default."')";
+      if($column->Extra == 'auto_increment')
+        $infoTable.= "->increment()";
+      $infoTable.= ";\n";
+    }
+  $infoTable.= "\t}\n}\n";
+
+  $models[$table] = $infoTable;
+}
+
+Database::creteContext('information_schema', 'root', '');
+
+foreach($models as $name => &$text){
+  $text.= "\nclass {$name}Foreigns {";
+  $constructor = "\n\n\tpublic function __construct(){";
+  $viaForeigns = Database::execute(getViaForeigns($dbname, $name))->fetchAll(PDO::FETCH_OBJ);
+
+  foreach($viaForeigns as $foreign){
+    $from = $foreign->from;
+    $to = $foreign->to;
+    $via = $foreign->via;
+    $from_col = $foreign->from_col;
+    $to_col = $foreign->to_col;
+    $via_from = $foreign->via_from;
+    $via_to = $foreign->via_to;
+
+    $text.= "\n\tpublic static ".$foreign->to;
+    $constructor.= "\n\t\tstatic::$".$foreign->to.' = new ViaForeign();';
+    $constructor.= "\n\t\tstatic::$".$foreign->to."->setFrom('$from', '$from_col');";
+    $constructor.= "\n\t\tstatic::$".$foreign->to."->setVia('$via', '$via_from', '$via_to');";
+    $constructor.= "\n\t\tstatic::$".$foreign->to."->setTo('$to', '$to_col');";
+    $constructor.= "\n";
+  }
+
+  $foreigns = Database::execute(getForeigns($dbname, $name))->fetchAll(PDO::FETCH_OBJ);
+
+  foreach($foreigns as $foreign){
+    $from = $foreign->from;
+    $to = $foreign->to;
+    $from_col = $foreign->from_col;
+    $to_col = $foreign->to_col;
+
+    $text.= "\n\tpublic static ".$foreign->from;
+    $constructor.= "\n\t\tstatic::$".$foreign->to.' = new Foreign();';
+    $constructor.= "\n\t\tstatic::$".$foreign->to."->setFrom('$from', '$from_col');";
+    $constructor.= "\n\t\tstatic::$".$foreign->to."->setTo('$to', '$to_col');";
+    $constructor.= "\n";
+  }
+
+  $constructor.= "\n\t}\n";
+  $text.= $constructor."}\n\n";
+  $text.= "new {$name}UserInfo();\nnew {$name}Foreigns;"
+  $text = "<?php\n$text\n?>";
+}
+
+echo var_dump($models);
+
+function getViaForeigns($db, $table){
+  return "SELECT
+  REPLACE(table1.ref_name, '$db/', '') 'from',
+  REPLACE(table2.ref_name, '$db/', '') 'to',
+  REPLACE(table1.for_name, '$db/', '') 'via',
+  table1.ref_col_name 'from_col',
+  table1.for_col_name 'via_from',
+  table2.ref_col_name 'to_col',
+  table2.for_col_name 'via_to'
+  FROM (select for_name, ref_name, for_col_name, ref_col_name from INNODB_SYS_FOREIGN NATURAL join INNODB_SYS_FOREIGN_COLS) table1
+  CROSS JOIN
+  (select for_name, ref_name, for_col_name, ref_col_name from INNODB_SYS_FOREIGN NATURAL join INNODB_SYS_FOREIGN_COLS) table2
+  WHERE
+  table1.for_name = table2.for_name
+  AND
+  table1.ref_name != table2.ref_name
+  AND
+  table1.ref_name = '$db/$table'";
+}
+
+function getForeigns($db, $table){
+  return "SELECT
+REPLACE
+    (for_name, '$db/', '') 'to',
+REPLACE
+    (ref_name, '$db/', '') 'from',
+    for_col_name to_col,
+    ref_col_name from_col
+FROM
+    INNODB_SYS_FOREIGN
+NATURAL JOIN INNODB_SYS_FOREIGN_COLS WHERE for_name = '$db/$table'";
+}
+
+?>

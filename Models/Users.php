@@ -1,9 +1,6 @@
 <?php
-class Users{
-  public $user_id;
-  public $login;
-  public $password;
-  public $files;
+class User{
+
 }
 
 class UsersTableInfo extends TableInfo{

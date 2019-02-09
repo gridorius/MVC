@@ -3,9 +3,13 @@ class Database{
   private static $connection;
   private static $context;
 
-  public function __construct($dbname, $login, $password){
+  private function __construct($dbname, $login, $password){
     static::$connection = new PDO("mysql:dbname=$dbname;host=localhost;charset=utf8", $login, $password);
     static::$context = $this;
+  }
+
+  public static function creteContext($dbname, $login, $password){
+    new Database($dbname, $login, $password);
   }
 
   public static function __callStatic($name, $args){

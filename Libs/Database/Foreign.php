@@ -16,8 +16,8 @@ class Foreign{
   }
 
   public function getQuery(){
-    return 'CONSTRAINT '.$this->from_col.'_'.$this->from_name.' FOREIGN KEY ('.$this->from_col.')
-    REFERENCES '.$this->to_name.'('.$this->to_col.')';
+    return 'CONSTRAINT '.$this->to_name.'_'.$this->to_col.' FOREIGN KEY ('.$this->to_col.')
+    REFERENCES '.$this->from_name.'('.$this->from_col.')';
   }
 }
 ?>
