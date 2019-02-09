@@ -15,6 +15,10 @@ class Foreign{
     $this->to_col = $column;
   }
 
+  public function __toString(){
+    return $this->getQuery();
+  }
+
   public function getQuery(){
     return 'CONSTRAINT '.$this->to_name.'_'.$this->to_col.' FOREIGN KEY ('.$this->to_col.')
     REFERENCES '.$this->from_name.'('.$this->from_col.')';

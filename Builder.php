@@ -5,7 +5,7 @@ class Builder{
     foreach(glob($path.'/*') as $file)
       if(!is_dir($file))
         $files[] = $file;
-
+        
     return $files;
   }
 

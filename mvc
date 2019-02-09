@@ -23,7 +23,7 @@ foreach($tables as $table){
 
   $infoTable.= "\n\tpublic function __construct(){\n";
     foreach($columns as $column){
-      $infoTable.= "\t\t(new Column('".$column->Type."'))";
+      $infoTable.= "\t\tstatic::$".$column->Field." = (new Column('".$column->Type."'))";
       if($column->Null == 'YES')
         $infoTable.= "->nullable()";
       if($column->Key == 'PRI')
@@ -43,7 +43,7 @@ foreach($tables as $table){
 
 Database::creteContext('information_schema', 'root', '');
 
-foreach($models as $name => &$text){
+foreach($models as $name => $text){
   $text.= "\nclass {$name}Foreigns {";
   $constructor = "\n\n\tpublic function __construct(){";
   $viaForeigns = Database::execute(getViaForeigns($dbname, $name))->fetchAll(PDO::FETCH_OBJ);
@@ -57,7 +57,7 @@ foreach($models as $name => &$text){
     $via_from = $foreign->via_from;
     $via_to = $foreign->via_to;
 
-    $text.= "\n\tpublic static ".$foreign->to;
+    $text.= "\n\tpublic static $".$foreign->to.';';
     $constructor.= "\n\t\tstatic::$".$foreign->to.' = new ViaForeign();';
     $constructor.= "\n\t\tstatic::$".$foreign->to."->setFrom('$from', '$from_col');";
     $constructor.= "\n\t\tstatic::$".$foreign->to."->setVia('$via', '$via_from', '$via_to');";
@@ -73,21 +73,19 @@ foreach($models as $name => &$text){
     $from_col = $foreign->from_col;
     $to_col = $foreign->to_col;
 
-    $text.= "\n\tpublic static ".$foreign->from;
-    $constructor.= "\n\t\tstatic::$".$foreign->to.' = new Foreign();';
-    $constructor.= "\n\t\tstatic::$".$foreign->to."->setFrom('$from', '$from_col');";
-    $constructor.= "\n\t\tstatic::$".$foreign->to."->setTo('$to', '$to_col');";
+    $text.= "\n\tpublic static $".$foreign->from.';';
+    $constructor.= "\n\t\tstatic::$".$foreign->from.' = new Foreign();';
+    $constructor.= "\n\t\tstatic::$".$foreign->from."->setFrom('$from', '$from_col');";
+    $constructor.= "\n\t\tstatic::$".$foreign->from."->setTo('$to', '$to_col');";
     $constructor.= "\n";
   }
 
   $constructor.= "\n\t}\n";
   $text.= $constructor."}\n\n";
-  $text.= "new {$name}UserInfo();\nnew {$name}Foreigns();";
+  $text.= "new {$name}InfoTable();\nnew {$name}Foreigns();";
   $text = "<?php\n$text\n?>";
+  file_put_contents('Models/'.$name.'.php', $text);
 }
-
-foreach($models as $name => $text)
-  file_put_contents('Models/'.$name, $text);
 
 function getViaForeigns($db, $table){
   return "SELECT

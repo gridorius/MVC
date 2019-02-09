@@ -1,8 +1,12 @@
 <?php
 include_once 'Builder.php';
 
-$files = Builder::reqursiveBuild(Libs);
+$libs = Builder::reqursiveBuild('Libs');
+$models = Builder::build('Models');
 
-foreach($files as $file)
-  include_once($file);
+foreach($libs as $lib)
+  include_once($lib);
+
+foreach($models as $model)
+  include_once($model);
 ?>

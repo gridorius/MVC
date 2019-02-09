@@ -1,5 +1,5 @@
 <?php
-class TableInfo{
+class InfoTable{
   public function __construct($name){
     $this->name = $name;
   }
@@ -15,7 +15,7 @@ class TableInfo{
     $unique = [];
     $constraints = [];
 
-    $name = preg_replace('/TableInfo/', '', static::class);
+    $name = preg_replace('/InfoTable/', '', static::class);
     $infoClass = new ReflectionClass(static::class);
     $columns = $infoClass->getStaticProperties();
     $foreigns = (new ReflectionClass("{$name}Foreigns"))->getStaticProperties();
@@ -26,8 +26,6 @@ class TableInfo{
         $primary[] = $key;
       else if($column->unique)
         $unique[] = $key;
-      else if($foreigns[$key])
-        $constraints[] = $foreigns[$key]->getQuery();
     }
 
     $fields = join(', ', $fields);
@@ -40,6 +38,10 @@ class TableInfo{
 
     if(count($constraints))
       $fields.= ', '.join(', ', $constraints);
+
+    foreach($foreigns as $foreign)
+      if($foreign instanceof Foreign)
+        $fields.= ', '.$foreign;
 
     $create = "CREATE TABLE ".$name."($fields)";
     
