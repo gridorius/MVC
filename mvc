@@ -82,11 +82,12 @@ foreach($models as $name => &$text){
 
   $constructor.= "\n\t}\n";
   $text.= $constructor."}\n\n";
-  $text.= "new {$name}UserInfo();\nnew {$name}Foreigns;"
+  $text.= "new {$name}UserInfo();\nnew {$name}Foreigns();";
   $text = "<?php\n$text\n?>";
 }
 
-echo var_dump($models);
+foreach($models as $name => $text)
+  file_put_contents('Models/'.$name, $text);
 
 function getViaForeigns($db, $table){
   return "SELECT
