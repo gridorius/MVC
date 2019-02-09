@@ -6,6 +6,6 @@ include_once 'Database.php';
 include_once 'Where.php';
 
 $where = new Where();
-$where->where('name', 'gridorius')->where('password', '123');
+$where->where('name', 'gridorius');
 echo $where->get();
 ?>

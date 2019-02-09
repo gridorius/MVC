@@ -1,17 +1,19 @@
 <?php
 class Database{
-  private $connection;
+  private static $connection;
+  private static $context;
 
   public function __construct($dbname, $login, $password){
-    $this->connection = new PDO("mysql:dbname=$dbname;host=localhost;charset=utf8", $login, $password);
+    static::$connection = new PDO("mysql:dbname=$dbname;host=localhost;charset=utf8", $login, $password);
+    static::$context = $this;
   }
 
-  public function table($name){
-    return new Table($name, $this);
+  public static function table($name){
+    return new Table($name);
   }
 
-  public function execute($query, $args = []){
-    $prepare = $this->connection->prepare($query);
+  public static function execute($query, $args = []){
+    $prepare = static::$connection->prepare($query);
     return $prepare->execute($args);
   }
 }

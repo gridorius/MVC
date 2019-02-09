@@ -1,18 +1,19 @@
 <?php
 class Table{
-  private $name;
-  private $database;
-  private $columns = [];
+  protected $name;
+  protected $columns = [];
 
-  public function __construct($name, $database){
+  public function __construct($name){
     $this->name = $name;
-    $this->database = $database;
   }
 
   public function addColumns(){
     foreach(func_get_args() as $column)
       $this->columns[$column->name] = $column;
   }
+}
+
+class NewTable extends Table{
 
   public function createQuery(){
     $fields = [];
@@ -47,7 +48,7 @@ class Table{
   }
 
   public function create(){
-    $this->database->execute($this->createQuery());
+    Database::execute($this->createQuery());
   }
 }
 ?>

@@ -26,7 +26,7 @@ class Where{
 
   public function whereWrite($ca, $args){
     if($ca == 1)
-      $this->where.= ' ('.func_get_args()[0](new Where())->get().')';
+      $this->where.= ' ('.$args[0](new Where())->get().')';
     else if($ca == 2)
       $this->where.= ' '.$args[0].' = '.$args[1];
     else if($ca == 3)
