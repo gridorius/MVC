@@ -1,0 +1,42 @@
+class Users extends Table{
+  public $user_id;
+  public $login;
+  public $password;
+}
+
+class UsersTableInfo extends TableInfo{
+  public $user_id;
+  public $login;
+  public $password;
+
+  public function __construct(){
+    $this->user_id = new Column('int(3)');
+    $this->login = new Column('varchar(100)');
+    $this->password = new Column('varchar(100)');
+  }
+}
+
+class UserForeigns extends Foreigns{
+  $files;
+
+  public function __construct(){
+    $files = $this->files = new ViaForeign();
+    $file->setFrom('users', 'user_id');
+    $file->setVia('user_files', 'user_id' ,'file_id');
+    $file->setTo('files', 'file_id');
+  }
+}
+
+SELECT
+table1.ref_name,
+table2.ref_name,
+table1.for_name,
+table1.ref_col_name,
+table1.for_col_name,
+table2.ref_col_name,
+table2.for_col_name
+FROM (select for_name, ref_name, for_col_name, ref_col_name from INNODB_SYS_FOREIGN NATURAL join INNODB_SYS_FOREIGN_COLS) table1
+CROSS JOIN
+(select for_name, ref_name, for_col_name, ref_col_name from INNODB_SYS_FOREIGN NATURAL join INNODB_SYS_FOREIGN_COLS) table2
+WHERE
+table1.for_name = table2.for_name
